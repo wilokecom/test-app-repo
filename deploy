@@ -1,0 +1,100 @@
+#! /usr/bin/env bash
+clear 
+figlet -f big W I L O K E - WE ARE DREAMER
+# echo "Vui long nhap danh sach khang hang can build app."
+# echo "Moi app cach nhau boi mot khoang trang. Vi du: appa appb: "
+# read -a ALLAPPS
+echo "Do you want to reinstall node modules? Y to install and other to prevent"
+read IS_INSTALL_NODE
+IS_INSTALL_NODE_U=${IS_INSTALL_NODE,,}
+ALLAPPS=('user/wilcity')
+echo "Thank you! Apps dang duoc kiem tra ...."
+sleep 3
+
+for i in ${ALLAPPS[@]}
+do
+   echo "Chuan bi checkout $i tu github"
+   sleep 2
+   echo "Dang checkout app tu github"
+   sleep 3
+   git checkout \.
+   git checkout $i
+   echo "Da checkout app tu github thanh cong"
+   sleep 1
+   AndroidVersion=`cat app.json|jq '.expo.android.versionCode'`
+   echo "Phien ban Android hien tai la $AndroidVersion"
+   sleep 2
+   echo "Chuan bi nang cap version ...."
+   sleep 3
+   # jq --raw-output '.expo.android.versionCode=.expo.android.versionCode+1' app.json|sponge app.json
+   # NewAndroidVersion=`cat app.json|jq '.expo.android.versionCode'`
+   echo "Da nang cap len version ${NewAndroidVersion}"
+
+   #### 2. Script Setup ####
+	# It's useful to exit the bash script when a command exits with a non-zero status
+	# as the following commands must be run successfully in sequence for expected results.
+	set -e # exit entire script when command exits with non-zero status
+
+	# Install dependencies
+	if [[ $IS_INSTALL_NODE_U == 'y' ]]
+	then
+		sleep 3
+		echo "Cai dat npm"
+		npm install
+	fi	
+	#Increasing Android Version
+	#jq --raw-output '.expo.android.versionCode=.expo.android.versionCode+1' app.json|sponge app.json
+
+	# [Optional] Login to Expo using username & password
+	# You may or may not need to do this depending on your setup.
+	# Note the $EXPO_USERNAME and $EXPO_PASSWORD env variables
+	# expo login -u $EXPO_USERNAME -p $EXPO_PASSWORD --non-interactive
+
+	#### 3. Publish to Expo ####
+	# Publish `production` release 
+	sleep 3
+	echo "Dang tien hanh build app ...."
+	#expo publish --release-channel production --non-interactive
+
+	#### 4. Building Android Standalone App ####
+	# Start building standalone android build using `production` release channel
+	# expo build:android --release-channel production --non-interactive --no-publish
+
+	# Download the artifact to current directory as `app.apk`
+	# curl -o app.apk "$(expo url:apk --non-interactive)"
+
+	#### 5. Submit and publish standalone Android app to the Google Play Store ####
+	# Use fastlane to upload your current standalone android build
+	# Customize this to fit your needs. Take note of env variables. 
+	# Check out https://docs.fastlane.tools for more info.
+	# fastlane supply --track 'production' --json_key '<path/to/json_key.json>' --package_name "<your-package-name>" --apk "app.apk" --skip_upload_metadata --skip_upload_images --skip_upload_screenshots
+
+	#### 6. Building iOS Standalone App ####
+	jq --raw-output '.expo.ios.buildNumber="7"' app.json|sponge app.json
+   	#NewAndroidVersion=`cat app.json|jq '.expo.android.versionCode'`
+	
+	# Start building standalone android build using `production` release channel
+	expo build:ios --release-channel production --non-interactive
+
+	# Download the artifact to current directory as `app.ipa`
+	curl -o app.ipa "$(expo url:ipa --non-interactive)"
+
+	#### 7. Submit standalone iOS app to iTunes Connect ####
+	# Make sure the following env variables are set
+	export DELIVER_USERNAME=contact.wilcity@gmail.com
+	export FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD=xnzj-dmeu-gkkp-oahm
+	export FASTLANE_PASSWORD=Nguyen_123.#.
+	export FASTLANE_SESSION='---\n- !ruby/object:HTTP::Cookie\n  name: DES5f37da19495a5e2445b21d508b3bbf73b\n  value: HSARMTKNSRVXWFlazUvjMmXaQx8yCDpocLuO2muWrUJRLbKiSUy5hZei3ttZEni05bQRvx1gsUEwkFZ//evwT6quWTfwYUfI6Fg7612lhXZL7q1HPdYvjBxsW3SdkW8m3jsnV+N2ct8=SRVX\n  domain: idmsa.apple.com\n  for_domain: true\n  path: "/"\n  secure: true\n  httponly: true\n  expires:\n  max_age: 2592000\n  created_at: &1 2020-08-18 09:27:03.739622000 +07:00\n  accessed_at: *1\n- !ruby/object:HTTP::Cookie\n  name: myacinfo\n  value: DAWTKNV27000014620a54bd2613ead4d0e67edf35b37d5c4e8b016d30ecd119dea2a2030e0a4a78112aac2e771026ae7c814d692c67fd255a26b077b747fdc3e19bd02c0048bfe18b1a1951137f50c181a31b3310ab7f4f13ec6301255b5118d99fc1311d10d4c203110fad24fd9b036fbc59c25e917942301d04f327e8229ab9fe16b53ea7f25513d119a634c60ab773c73b4c3c1a5eee073166cebb5ef5574f0b85258ec7e0682bd395514c95741a09bfd00406cd77bfb5c7fbc9196e27c02d8e62ea60d5e1d04285d98831a58236e4a57a9a649535d99725d42b2891fb68dfdb06fd73e02e2b7c9c37ea86d7e1a255c23bdf5659a64d5d8cb6e717cb61b5a15b501f9e6ac98e900e33c066c7d890fc37c7226d2377871815e94cf10beeb50f52911992827ce4ed5332cbe068c44e08b4b2950b8a4e0331a551626e199b678cf610cd07dcdb741c0d3195556722eca7d6f217334b1971786b3651b39bf082deaf51838bc6d3f204e2199d548dda333e05d82f1aa44caa901a9ea58bcd25bd366c139715d7b0d81b86a9b697da5897490f49bf98ace4af8cb456f6e9089afb4051759521a3ee37a2297b1325fdb6679fe843eb884932ff510ae6df62d747ce7965a154d6455742477f031cbaee6ea819c021b109fad55d8c6fc99e205d9d8be9f1d2b45cf7f1657542da5a2e954f7eb5444734466396433313232643836306265393763623632626434393861343437323562336536383965396532MVRYV2\n  domain: apple.com\n  for_domain: true\n  path: "/"\n  secure: true\n  httponly: true\n  expires:\n  max_age:\n  created_at: 2020-08-18 09:27:03.739740000 +07:00\n  accessed_at: 2020-08-18 09:27:03.753125000 +07:00\n- !ruby/object:HTTP::Cookie\n  name: dqsid\n  value: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1OTc3MTc2MjMsImp0aSI6Ii16bHh6VGNtemJTNnJYYmpVQ0E4c2cifQ.W5q2ypfYhCcMN1TRQLsTl8mbby-YX4dwLoEo_4pIdJI\n  domain: appstoreconnect.apple.com\n  for_domain: false\n  path: "/"\n  secure: true\n  httponly: true\n  expires:\n  max_age: 1800\n  created_at: &2 2020-08-18 09:27:04.763622000 +07:00\n  accessed_at: *2\n'
+
+	# # Use fastlane to upload your current standalone iOS build to itc
+	fastlane pilot upload --changelog "Something that is new here"
+
+	#### Misc ####
+	# [Optional] You may or may not need to do this depending on your setup.
+	# expo logout
+   sleep 5
+   echo "Successfully built standalone app:$i" # or do whatever with individual element of the array
+   # expo start
+done
+
+figlet -f big D O N E

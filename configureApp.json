@@ -1,0 +1,19 @@
+{
+    "api": {
+        "baseUrl": "https://diadiemthainguyen.com/",
+        "timeout": 30000
+    },
+    "colorPrimary": "#d81340",
+    "appleColor": "white",
+    "loginScreenStartApp": {
+        "enable": true,
+        "skipButtonText": "Skip",
+        "title": "Địa điểm Thái Nguyên",
+        "text": "Khám phá địa điểm, ẩm thực, văn hoá Thái Nguyên"
+    },
+    "googleLogin": {
+        "usesGoogleSignIn": false,
+        "iosStandaloneAppClientId": "194102947688-91p6h47dm684pj1nupvks7hcu9mb5ffj.apps.googleusercontent.com",
+        "androidStandaloneAppClientId": "194102947688-43umicsfbdht14vf7bhfq3ht0a5jd3ol.apps.googleusercontent.com"
+    }
+}

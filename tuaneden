@@ -1,0 +1,3 @@
+echo "Vui long nhap ten cua ban"
+read username
+echo "Xin chao $username"
