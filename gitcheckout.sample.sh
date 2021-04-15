@@ -1,5 +1,5 @@
 #!/bin/bash
-git switch -c wilcity1 &&
+git switch -c wiloke &&
 git add . &&
 git commit -m "First Commit" &&
-git push -u origin wilcity1
+git push -u origin wiloke

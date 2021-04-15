@@ -2,9 +2,9 @@
     "expo": {
         "name": "Wilcity",
         "description": "Wilcity",
-        "slug": "wilcity",
+        "slug": "wilcity1",
         "privacy": "public",
-        "scheme": "wilcity",
+        "scheme": "wilcity1",
         "platforms": ["ios", "android"],
         "version": "2.1.0",
         "orientation": "portrait",
